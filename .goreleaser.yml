@@ -47,8 +47,6 @@ builds:
     ldflags:
       - &ldflags-metadata
         -X github.com/pelicanplatform/pelican/version.commit={{.Commit}} -X github.com/pelicanplatform/pelican/version.date={{.Date}} -X github.com/pelicanplatform/pelican/version.builtBy=goreleaser -X github.com/pelicanplatform/pelican/version.version={{.Version}}
-      - &ldflags-strip-symbols
-        -s -w
     ignore:
       - goos: windows
         goarch: arm64
@@ -56,6 +54,12 @@ builds:
         goarch: ppc64le
       - goos: darwin
         goarch: ppc64le
+
+    hooks:
+      post:
+        - objcopy --only-keep-debug {{.Binary}} {{.Binary}}.debug
+        - strip {{.Binary})
+        - objcopy --add-gnu-debuglink={{.Binary}}-{{.Version}}.{{.Runtime.Goarch}}.debug {{.Binary}}
 
   # Build a `pelican` binary that includes debugging symbols.
   - <<: *build-pelican
@@ -83,7 +87,6 @@ builds:
       - lotman
     ldflags:
       - *ldflags-metadata
-      - *ldflags-strip-symbols
 
 # Goreleaser complains if there's a different number of binaries built for different architectures
 # in the same archive. Instead of plopping pelican-server in the same archive as pelican, split the

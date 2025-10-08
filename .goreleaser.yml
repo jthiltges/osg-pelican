@@ -57,9 +57,9 @@ builds:
 
     hooks:
       post:
-        - objcopy --only-keep-debug {{.Name}} {{.Name}}.debug
-        - strip {{.Binary})
-        - objcopy --add-gnu-debuglink={{.Name}}-{{.Version}}.{{.Runtime.Goarch}}.debug {{.Name}}
+        - objcopy --only-keep-debug {{.Path}}/{{.Name}} {{.Path}}/{{.Name}}.debug
+        - strip {{.Path}}/{{.Name}}
+        - objcopy --add-gnu-debuglink={{.Name}}-{{.Version}}.{{.Runtime.Goarch}}.debug {{.Path}}/{{.Name}}
 
   # Build a `pelican` binary that includes debugging symbols.
   - <<: *build-pelican
